@@ -1,8 +1,22 @@
+/**
+ * @file main.cpp
+ *
+ * @brief Função principal que executa o programa Concordo.
+ */
+
 #include "Sistema.h"
 
 #include <iostream>
 #include <sstream>
 
+/**
+ * @brief Função principal que inicia o programa Concordo.
+ *
+ * @param argc O número de argumentos de linha de comando.
+ * @param argv Um array de strings contendo os argumentos de linha de comando.
+ *
+ * @return O código de saída do programa.
+ */
 int main(int argc, char *argv[])
 {
     Sistema sistema;
@@ -13,21 +27,28 @@ int main(int argc, char *argv[])
     do
     {
         string linha;
-
         getline(cin, linha);
+
+        /* Manipulação da linha */
         istringstream iss(linha);
         string comando, param1, param2, param3;
-
-        if (getline(iss, comando, ' '))
+        getline(iss, comando, ' ');
+        getline(iss, param1, ' ');
+        getline(iss, param2, '\n');
+        if (param2[0] == '"')
         {
-            if (getline(iss, param1, ' '))
-            {
-                if (getline(iss, param2, ' '))
-                {
-                    getline(iss, param3, '\n');
-                }
-            }
+            param2.erase(0, 1);
+            param2.pop_back();
         }
+        else
+        {
+            istringstream iss2(param2);
+            getline(iss2, param2, ' ');
+            getline(iss2, param3, '\n');
+        }
+
+
+        /* Menu de comandos*/
 
         if (comando == "quit")
         {
@@ -78,7 +99,9 @@ int main(int argc, char *argv[])
         else if (comando == "list-participants")
         {
             sistema.listarParticipantesDoServidor();
-        } else {
+        }
+        else
+        {
             cout << "Comando invalido" << endl;
         }
     } while (continuar);
