@@ -13,10 +13,10 @@
  * @param donoId O ID do usuário dono do servidor.
  * @param n O nome do servidor.
  */
-Servidor::Servidor(int donoId, string n)
+Servidor::Servidor(int donoId, string nomeServidor)
 {
     this->usuarioDonoId = donoId;
-    this->nome = n;
+    this->nome = nomeServidor;
     this->descricao = "";
     this->codigoConvite = "";
     this->canais = vector<Canal *>();

@@ -15,12 +15,12 @@
  * @param s A senha do usuário.
  * @param i O ID do usuário.
  */
-Usuario::Usuario(string n, string e, string s, int i)
+Usuario::Usuario(string nn, string ee, string ss, int ii)
 {
-    nome = n;
-    email = e;
-    senha = s;
-    id = i;
+    nome = nn;
+    email = ee;
+    senha = ss;
+    id = ii;
 }
 
 /**

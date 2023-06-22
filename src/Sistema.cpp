@@ -24,21 +24,51 @@ Sistema::Sistema()
  */
 Sistema::~Sistema()
 {
-    // Liberar a memória alocada para a variável usuariosDoSistema
-    for (size_t i = 0; i < this->usuariosDoSistema->size(); i++)
+    /*<! Liberar a memória alocada para a variável usuariosDoSistema */    
+    for (auto usuario : *usuariosDoSistema)
     {
-        delete (*this->usuariosDoSistema)[i];
+        delete usuario;
     }
+
     usuariosDoSistema->clear();
     delete usuariosDoSistema;
 
-    // Liberar a memória alocada para a variável servidoresDoSistema
-    for (size_t i = 0; i < this->servidoresDoSistema->size(); i++)
+    /*<! Liberar a memória alocada para a variável servidoresDoSistema */
+    for (auto servidor : *servidoresDoSistema)
     {
-        delete (*this->servidoresDoSistema)[i];
+        delete servidor;
     }
+
     servidoresDoSistema->clear();
     delete servidoresDoSistema;
+}
+
+/**
+ * @brief Adiciona um novo usuário ao sistema.
+ *
+ * @param email O email do usuário.
+ * @param senha A senha do usuário.
+ * @param nome O nome do usuário.
+ */
+void Sistema::adicionarUsuario(string email, string senha, string nome)
+{
+    // Verifica se um usuário com os mesmos dados já foi cadastrado
+    int tamanho = usuariosDoSistema->size();
+    for (int ii = 0; ii < tamanho; ii++)
+    {
+        // Verifica se o email e senha fornecidos correspondem a algum usuário digitado.
+        if ((*usuariosDoSistema)[ii]->getEmail() == email)
+        {
+            cout << "Usuario ja existe!" << endl;
+            return;
+        }
+    }
+
+    // Cadastra o usuario
+    Usuario *user = new Usuario(nome, email, senha, tamanho);
+    usuariosDoSistema->push_back(user);
+
+    cout << "Usuario criado" << endl;
 }
 
 /**
@@ -50,13 +80,18 @@ Sistema::~Sistema()
  */
 bool Sistema::login(string email, string senha)
 {
+    /* Verifica se existe algum usuário logado */
+    if (usuarioLogadoAtual != nullptr) {
+        disconnect();
+    }
+
     // Percorre o vector de usuarios cadastrados no sistema.
-    for (size_t i = 0; i < usuariosDoSistema->size(); i++)
+    for (size_t ii = 0; ii < usuariosDoSistema->size(); ii++)
     {
         // Verifica se o email e senha fornecidos correspondem a algum usuário digitado.
-        if ((*usuariosDoSistema)[i]->getEmail() == email && (*usuariosDoSistema)[i]->getSenha() == senha)
+        if ((*usuariosDoSistema)[ii]->getEmail() == email && (*usuariosDoSistema)[ii]->getSenha() == senha)
         {
-            usuarioLogadoAtual = (*usuariosDoSistema)[i];
+            usuarioLogadoAtual = (*usuariosDoSistema)[ii];
             cout << "Logado como " << usuarioLogadoAtual->getEmail() << endl;
             return true;
         }
@@ -74,42 +109,19 @@ bool Sistema::login(string email, string senha)
  */
 bool Sistema::disconnect()
 {
+    // Verifica se existe algum usuário logado.
     if (usuarioLogadoAtual == nullptr)
     {
         cout << "Nao esta conectado" << endl;
         return false;
     }
+
+    // Desconecta o usuário e imprime mensagem de sucesso
     cout << "Desconectando usuario " << usuarioLogadoAtual->getEmail() << endl;
     usuarioLogadoAtual = nullptr;
+    servidorAtual = nullptr;
+    canalAtual = nullptr;
     return true;
-}
-
-/**
- * @brief Adiciona um novo usuário ao sistema.
- *
- * @param email O email do usuário.
- * @param senha A senha do usuário.
- * @param nome O nome do usuário.
- */
-void Sistema::adicionarUsuario(string email, string senha, string nome)
-{
-    // Verifica se um usuário com os mesmos dados já foi cadastrado
-    int tamanho = usuariosDoSistema->size();
-    for (int i = 0; i < tamanho; i++)
-    {
-        // Verifica se o email e senha fornecidos correspondem a algum usuário digitado.
-        if ((*usuariosDoSistema)[i]->getEmail() == email)
-        {
-            cout << "Usuario ja existe!" << endl;
-            return;
-        }
-    }
-
-    // Cadastra o usuario
-    Usuario *user = new Usuario(nome, email, senha, tamanho);
-    usuariosDoSistema->push_back(user);
-
-    cout << "Usuario criado" << endl;
 }
 
 /**
@@ -140,12 +152,12 @@ Usuario *Sistema::buscarPeloID(int indiceBuscado)
  */
 Servidor *Sistema::buscarServidorPorNome(string nome, string msgDeErro)
 {
-    for (int i = 0; i < servidoresDoSistema->size(); i++)
+    for (int ii = 0; ii < servidoresDoSistema->size(); ii++)
     {
         // Verifica se o email e senha fornecidos correspondem a algum usuário digitado.
-        if ((*servidoresDoSistema)[i]->getNome() == nome)
+        if ((*servidoresDoSistema)[ii]->getNome() == nome)
         {
-            return (*servidoresDoSistema)[i];
+            return (*servidoresDoSistema)[ii];
         }
     }
 
@@ -165,13 +177,13 @@ Servidor *Sistema::buscarServidorPorNome(string nome, string msgDeErro)
  */
 Servidor *Sistema::buscarServidorPorNome(string nome, int &index, string msgDeErro)
 {
-    for (int i = 0; i < servidoresDoSistema->size(); i++)
+    for (int ii = 0; ii < servidoresDoSistema->size(); ii++)
     {
         // Verifica se o email e senha fornecidos correspondem a algum usuário digitado.
-        if ((*servidoresDoSistema)[i]->getNome() == nome)
+        if ((*servidoresDoSistema)[ii]->getNome() == nome)
         {
-            index = i;
-            return (*servidoresDoSistema)[i];
+            index = ii;
+            return (*servidoresDoSistema)[ii];
         }
     }
 
@@ -220,9 +232,21 @@ void Sistema::criarServidor(string nome)
  */
 bool Sistema::removerServidor(string nome)
 {
+    // Verifica se existe algum usuário logado.
+    if (usuarioLogadoAtual == nullptr)
+    {
+        cout << "Voce nao esta logado!" << endl;
+        return false;
+    }
+
     int index;
     string msgDeErro = "Servidor '" + nome + "' nao encontrado";
     Servidor *server = buscarServidorPorNome(nome, index, msgDeErro);
+
+    if (server == nullptr)
+    {
+        return false;
+    }
 
     // Verificar se o servidor escolhido existe e se o dono do servidor é o usuário logado.
     msgDeErro = "Voce nao e o dono do servidor '" + server->getNome() + "'";
@@ -234,6 +258,7 @@ bool Sistema::removerServidor(string nome)
     // Apaga o servidor.
     servidoresDoSistema->erase(servidoresDoSistema->begin() + index);
     cout << "Servidor '" + server->getNome() + "' removido" << endl;
+    delete server;
     return true;
 }
 
@@ -242,14 +267,23 @@ bool Sistema::removerServidor(string nome)
  */
 void Sistema::listarServidores()
 {
+    // Verifica se existe algum usuário logado.
+    if (usuarioLogadoAtual == nullptr)
+    {
+        cout << "Voce nao esta logado!" << endl;
+        return;
+    }
+
+    // Verifica se existem servidores cadastrados.
     if (servidoresDoSistema->size() == 0)
     {
         cout << "Nenhum servidor foi cadastrado" << endl;
     }
 
-    for (int i = 0; i < servidoresDoSistema->size(); i++)
+    // Percorre a lista de servidores e imprime os nomes dos mesmos.
+    for (int ii = 0; ii < servidoresDoSistema->size(); ii++)
     {
-        cout << (*servidoresDoSistema)[i]->getNome() << endl;
+        cout << (*servidoresDoSistema)[ii]->getNome() << endl;
     }
 }
 
@@ -279,6 +313,13 @@ bool Sistema::verificarDonoServidor(Servidor *server, string mensagemDeErro)
  */
 void Sistema::modificarDescricaoDeServidor(string nome, string descricao)
 {
+    // Verifica se existe algum usuário logado.
+    if (usuarioLogadoAtual == nullptr)
+    {
+        cout << "Voce nao esta logado!" << endl;
+        return;
+    }
+
     // Busca pelo servidor escolhido.
     string msgDeErro = "Servidor '" + nome + "' nao existe";
     Servidor *server = buscarServidorPorNome(nome, msgDeErro);
@@ -303,6 +344,13 @@ void Sistema::modificarDescricaoDeServidor(string nome, string descricao)
  */
 void Sistema::modificarCodigoServidor(string nome, string codigo)
 {
+    // Verifica se existe algum usuário logado.
+    if (usuarioLogadoAtual == nullptr)
+    {
+        cout << "Voce nao esta logado!" << endl;
+        return;
+    }
+
     string msgDeErro = "Servidor '" + nome + "' nao encontrado";
     Servidor *server = buscarServidorPorNome(nome, msgDeErro);
 
@@ -333,6 +381,13 @@ void Sistema::modificarCodigoServidor(string nome, string codigo)
  */
 void Sistema::entrarEmServidor(string nome, string cod)
 {
+    // Verifica se existe algum usuário logado.
+    if (usuarioLogadoAtual == nullptr)
+    {
+        cout << "Voce nao esta logado!" << endl;
+        return;
+    }
+
     string msgDeErro = "Servidor '" + nome + "' nao encontrado";
     Servidor *server = buscarServidorPorNome(nome, msgDeErro);
 
@@ -348,7 +403,7 @@ void Sistema::entrarEmServidor(string nome, string cod)
         return;
     }
 
-    if (server->getCodigo() != "")
+    if (server->getCodigo() != "" && cod == "")
     {
         cout << "Servidor requer codigo de convite" << endl;
         return;
@@ -384,6 +439,7 @@ void Sistema::sairDoServidor()
     if (servidorAtual == nullptr)
     {
         cout << "Voce nao esta visualizando nenhum servidor" << endl;
+        return;
     }
 
     cout << "Saindo do servidor '" << servidorAtual->getNome() << "'" << endl;
@@ -399,10 +455,24 @@ void Sistema::sairDoServidor()
  */
 void Sistema::listarParticipantesDoServidor()
 {
+    // Verifica se existe algum usuário logado.
+    if (usuarioLogadoAtual == nullptr)
+    {
+        cout << "Voce nao esta logado!" << endl;
+        return;
+    }
+
+    // Verifica se o usuário está em algum servidor.
+    if (servidorAtual == nullptr)
+    {
+        cout << "Voce nao esta visualizando nenhum servidor" << endl;
+        return;
+    }
+
     vector<int> listaParticipantes = servidorAtual->getParticipantesID();
 
-    for (size_t i = 0; i < listaParticipantes.size(); i++)
+    for (size_t ii = 0; ii < listaParticipantes.size(); ii++)
     {
-        cout << buscarPeloID(listaParticipantes[i])->getNome() << endl;
+        cout << buscarPeloID(listaParticipantes[ii])->getNome() << endl;
     }
 }

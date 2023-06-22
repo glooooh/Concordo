@@ -8,6 +8,8 @@ int main(int argc, char *argv[])
     Sistema sistema;
     int continuar = 1;
 
+    cout << "ABRINDO CONCORDO..." << endl;
+
     do
     {
         string linha;
@@ -22,9 +24,7 @@ int main(int argc, char *argv[])
             {
                 if (getline(iss, param2, ' '))
                 {
-                    if (getline(iss, param3, '\n'))
-                    {
-                    }
+                    getline(iss, param3, '\n');
                 }
             }
         }
@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
         if (comando == "quit")
         {
             cout << "Saindo do Concordo" << endl;
+            sistema.disconnect();
             return 0;
         }
         else if (comando == "create-user")
@@ -56,9 +57,6 @@ int main(int argc, char *argv[])
         }
         else if (comando == "set-server-invite-code")
         {
-            if (param2.empty()) {
-                param2 = "";
-            }
             sistema.modificarCodigoServidor(param1, param2);
         }
         else if (comando == "list-servers")
