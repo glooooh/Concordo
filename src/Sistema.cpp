@@ -315,7 +315,6 @@ bool Sistema::verificarDonoServidor(Servidor *server, string mensagemDeErro)
  */
 void Sistema::modificarDescricaoDeServidor(string nome, string descricao)
 {
-    cout << descricao << endl;
     // Verifica se existe algum usuário logado.
     if (usuarioLogadoAtual == nullptr)
     {
