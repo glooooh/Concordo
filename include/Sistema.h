@@ -28,13 +28,13 @@ public:
     // Destrutor
     ~Sistema();
 
+    // Funções de usuário
+    bool adicionarUsuario(string, string, string);
+    Usuario *buscarPeloID(int);
+
     // Acesso
     bool login(string, string);
     bool disconnect();
-
-    // Funções de usuário
-    void adicionarUsuario(string, string, string);
-    Usuario *buscarPeloID(int);
 
     // Funções de servidor
     Servidor *buscarServidorPorNome(string, string);

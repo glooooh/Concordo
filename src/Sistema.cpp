@@ -24,7 +24,7 @@ Sistema::Sistema()
  */
 Sistema::~Sistema()
 {
-    /*<! Liberar a memória alocada para a variável usuariosDoSistema */    
+    /*<! Liberar a memória alocada para a variável usuariosDoSistema */
     for (auto usuario : *usuariosDoSistema)
     {
         delete usuario;
@@ -49,8 +49,10 @@ Sistema::~Sistema()
  * @param email O email do usuário.
  * @param senha A senha do usuário.
  * @param nome O nome do usuário.
+ * 
+ * @return Retorna True se o cadastro foi bem sucedido, False caso contrário.
  */
-void Sistema::adicionarUsuario(string email, string senha, string nome)
+bool Sistema::adicionarUsuario(string email, string senha, string nome)
 {
     // Verifica se um usuário com os mesmos dados já foi cadastrado
     int tamanho = usuariosDoSistema->size();
@@ -60,15 +62,35 @@ void Sistema::adicionarUsuario(string email, string senha, string nome)
         if ((*usuariosDoSistema)[ii]->getEmail() == email)
         {
             cout << "Usuario ja existe!" << endl;
-            return;
+            return false;
         }
     }
 
     // Cadastra o usuario
     Usuario *user = new Usuario(nome, email, senha, tamanho);
     usuariosDoSistema->push_back(user);
-
     cout << "Usuario criado" << endl;
+    return true;
+}
+
+/**
+ * @brief Busca um usuário pelo índice.
+ *
+ * @param indiceBuscado O índice do usuário a ser buscado.
+ * @return Um ponteiro para o usuário encontrado, ou nullptr se o índice for inválido.
+ */
+Usuario *Sistema::buscarPeloID(int indiceBuscado)
+{
+    if (size_t(indiceBuscado) >= 0 && indiceBuscado < usuariosDoSistema->size())
+    {
+        Usuario *usuarioEncontrado = (*usuariosDoSistema)[indiceBuscado];
+        return usuarioEncontrado;
+    }
+    else
+    {
+        cout << "Índice inválido." << endl;
+        return nullptr;
+    }
 }
 
 /**
@@ -81,15 +103,15 @@ void Sistema::adicionarUsuario(string email, string senha, string nome)
 bool Sistema::login(string email, string senha)
 {
     /* Verifica se existe algum usuário logado */
-    if (usuarioLogadoAtual != nullptr) {
+    if (usuarioLogadoAtual != nullptr)
+    {
         disconnect();
     }
-
+    
     // Percorre o vector de usuarios cadastrados no sistema.
     for (size_t ii = 0; ii < usuariosDoSistema->size(); ii++)
     {
-        // Verifica se o email e senha fornecidos correspondem a algum usuário digitado.
-        if ((*usuariosDoSistema)[ii]->getEmail() == email && (*usuariosDoSistema)[ii]->getSenha() == senha)
+        if ((*usuariosDoSistema)[ii]->getEmail() == (email) && (*usuariosDoSistema)[ii]->getSenha() == senha)
         {
             usuarioLogadoAtual = (*usuariosDoSistema)[ii];
             cout << "Logado como " << usuarioLogadoAtual->getEmail() << endl;
@@ -122,26 +144,6 @@ bool Sistema::disconnect()
     servidorAtual = nullptr;
     canalAtual = nullptr;
     return true;
-}
-
-/**
- * @brief Busca um usuário pelo índice.
- *
- * @param indiceBuscado O índice do usuário a ser buscado.
- * @return Um ponteiro para o usuário encontrado, ou nullptr se o índice for inválido.
- */
-Usuario *Sistema::buscarPeloID(int indiceBuscado)
-{
-    if (size_t(indiceBuscado) >= 0 && indiceBuscado < usuariosDoSistema->size())
-    {
-        Usuario *usuarioEncontrado = (*usuariosDoSistema)[indiceBuscado];
-        return usuarioEncontrado;
-    }
-    else
-    {
-        cout << "Índice inválido." << endl;
-        return nullptr;
-    }
 }
 
 /**
@@ -382,21 +384,24 @@ void Sistema::modificarCodigoServidor(string nome, string codigo)
  */
 void Sistema::entrarEmServidor(string nome, string cod)
 {
-    // Verifica se existe algum usuário logado.
+    /* Verifica se existe algum usuário logado. */
     if (usuarioLogadoAtual == nullptr)
     {
         cout << "Voce nao esta logado!" << endl;
         return;
     }
 
+    /* Busca o servidor informado. */
     string msgDeErro = "Servidor '" + nome + "' nao encontrado";
     Servidor *server = buscarServidorPorNome(nome, msgDeErro);
 
+    /* Verifica se o servidor existe. */
     if (server == nullptr)
     {
         return;
     }
 
+    /* Verifica se o usuário logado é o dono do servidor. */
     if (server->getIdDono() == usuarioLogadoAtual->getID())
     {
         servidorAtual = server;
@@ -404,18 +409,32 @@ void Sistema::entrarEmServidor(string nome, string cod)
         return;
     }
 
+    /* Verifica se o usuário já está na lista de participantes do servidor. */
+    for (size_t ii = 0; ii < server->getParticipantesID().size(); ii++)
+    {
+        if (server->getParticipantesID()[ii] == usuarioLogadoAtual->getID())
+        {
+            servidorAtual = server;
+            cout << "Entrou no servidor com sucesso" << endl;
+            return;
+        }
+    }
+
+    /* Verifica se o servidor precisa de um código de convite. */
     if (server->getCodigo() != "" && cod == "")
     {
         cout << "Servidor requer codigo de convite" << endl;
         return;
     }
 
+    /* Verifica se o código informado está correto. */
     if (server->getCodigo() != cod)
     {
         cout << "Codigo invalido" << endl;
         return;
     }
 
+    /* Permite a entrada no servidor. */
     servidorAtual = server;
     cout << "Entrou no servidor com sucesso" << endl;
     if (!server->buscarParticipantePorId(usuarioLogadoAtual->getID()))
@@ -450,9 +469,8 @@ void Sistema::sairDoServidor()
 /**
  * @brief Lista os participantes do servidor atual.
  *
- * @details Este método obtém a lista de IDs dos participantes do servidor atual usando o método
- * getParticipantesID(). Em seguida, imprime os nomes correspondentes chamando o método
- * buscarPeloID().
+ * @details Este método obtém a lista de IDs dos participantes do servidor atual. Em seguida, 
+ * imprime os nomes correspondentes.
  */
 void Sistema::listarParticipantesDoServidor()
 {
