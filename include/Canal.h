@@ -20,11 +20,21 @@ protected:
     string nome;
 
 public:
-    // Construtores
+    /**
+     * @brief Construtor da classe Canal.
+     * 
+     * @param nome O nome do canal.
+     */
     Canal(string);
+
+    /**
+     * @brief Construtor padrão da classe Canal.
+     */
     Canal();
 
-    // Destrutor
+    /**
+     * @brief Destrutor padrão da classe Canal.
+     */
     ~Canal();
 };
 

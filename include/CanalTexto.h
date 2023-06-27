@@ -18,10 +18,14 @@ protected:
     vector<Mensagem> mensagens;
 
 public:
-    // Construtores
+    /**
+     * @brief Construtor padrão da classe CanalTexto.
+     */
     CanalTexto();
 
-    // Destrutor
+    /**
+     * @brief Destrutor padrão da classe CanalTexto.
+     */
     ~CanalTexto();
 };
 

@@ -18,10 +18,14 @@ protected:
     Mensagem ultimaMensagem;
 
 public:
-    // Construtores
+    /**
+     * @brief Construtor padrão da classe CanalVoz.
+     */
     CanalVoz();
 
-    // Destrutor
+    /**
+     * @brief Destrutor padrão da classe CanalVoz.
+     */
     ~CanalVoz();
 };
 

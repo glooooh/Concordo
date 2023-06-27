@@ -77,6 +77,7 @@ bool Sistema::adicionarUsuario(string email, string senha, string nome)
  * @brief Busca um usuário pelo índice.
  *
  * @param indiceBuscado O índice do usuário a ser buscado.
+ * 
  * @return Um ponteiro para o usuário encontrado, ou nullptr se o índice for inválido.
  */
 Usuario *Sistema::buscarPeloID(int indiceBuscado)
@@ -98,6 +99,7 @@ Usuario *Sistema::buscarPeloID(int indiceBuscado)
  *
  * @param email O email do usuário.
  * @param senha A senha do usuário.
+ * 
  * @return True se o login for bem-sucedido, False caso contrário.
  */
 bool Sistema::login(string email, string senha)

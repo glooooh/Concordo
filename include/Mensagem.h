@@ -22,11 +22,22 @@ private:
     string conteudo;
 
 public:
-    // Construtores
-    Mensagem(string, int, string);
+    /**
+     * @brief Construtor da classe Mensagem.
+     * 
+     * @param texto O texto da mensagem.
+     * @param idRemetente O id do usuário remetente da mensagem.
+     */
+    Mensagem(string texto, int idRemetente);
+    
+    /**
+     * @brief Construtor padrão da classe Mensagem.
+    */
     Mensagem();
-
-    // Destrutor
+    
+    /**
+     * @brief Destrutor da classe Mensagem.
+    */
     ~Mensagem();
 };
 
