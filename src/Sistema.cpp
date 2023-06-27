@@ -49,7 +49,7 @@ Sistema::~Sistema()
  * @param email O email do usuário.
  * @param senha A senha do usuário.
  * @param nome O nome do usuário.
- * 
+ *
  * @return Retorna True se o cadastro foi bem sucedido, False caso contrário.
  */
 bool Sistema::adicionarUsuario(string email, string senha, string nome)
@@ -107,7 +107,7 @@ bool Sistema::login(string email, string senha)
     {
         disconnect();
     }
-    
+
     // Percorre o vector de usuarios cadastrados no sistema.
     for (size_t ii = 0; ii < usuariosDoSistema->size(); ii++)
     {
@@ -255,6 +255,12 @@ bool Sistema::removerServidor(string nome)
     if (server == nullptr || !verificarDonoServidor(server, msgDeErro))
     {
         return false;
+    }
+
+    // Sai do servidor, caso esteja nele.
+    if (servidorAtual == server)
+    {
+        sairDoServidor();
     }
 
     // Apaga o servidor.
@@ -429,7 +435,10 @@ void Sistema::entrarEmServidor(string nome, string cod)
     /* Verifica se o código informado está correto. */
     if (server->getCodigo() != cod)
     {
-        cout << "Codigo invalido" << endl;
+        if (cod == "")
+            cout << "Servidor requer codigo de convite" << endl;
+        else
+            cout << "Codigo invalido" << endl;
         return;
     }
 
@@ -468,7 +477,7 @@ void Sistema::sairDoServidor()
 /**
  * @brief Lista os participantes do servidor atual.
  *
- * @details Este método obtém a lista de IDs dos participantes do servidor atual. Em seguida, 
+ * @details Este método obtém a lista de IDs dos participantes do servidor atual. Em seguida,
  * imprime os nomes correspondentes.
  */
 void Sistema::listarParticipantesDoServidor()
