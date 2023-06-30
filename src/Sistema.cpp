@@ -585,10 +585,17 @@ void Sistema::listarCanais()
  */
 void Sistema::criarCanal(string nome, string tipo)
 {
-    // Verifica se o usuário está em algum servidor.
+    /* Verifica se o usuário está em algum servidor. */
     if (servidorAtual == nullptr)
     {
         cout << "Voce nao esta visualizando nenhum servidor" << endl;
+        return;
+    }
+
+    /* Verifica se o usuário logado é o dono do servidor. */
+    if (servidorAtual->getIdDono() == usuarioLogadoAtual->getID())
+    {
+        cout << "Voce nao e o dono deste servidor" << endl;
         return;
     }
 
