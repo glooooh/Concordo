@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <ctime>
 
 /**
  * @brief Processa uma linha de entrada e separa os tokens em comando e parâmetros.
@@ -35,33 +36,54 @@ void processarLinha(const string &linha, string &comando, string &param1, string
     }
 
     /* Manipulação das variáveis usadas no código: */
+    bool stop = false;
     if (tokens.size() >= 1)
         comando = tokens[0];
     if (tokens.size() >= 2)
+    {
         param1 = tokens[1];
+        for (size_t ii = 2; ii < tokens.size() && comando == "send-message"; ii++)
+        {
+            param1 += ' ' + tokens[ii];
+            tokens[ii] = "";
+            stop = true;
+        }
+    }
     if (tokens.size() >= 3)
     {
         param2 = tokens[2];
-        for (size_t i = 3; i < tokens.size() && param2.front() == '"'; i++)
+        for (size_t ii = 3; ii < tokens.size() && param2.front() == '"' && !stop; ii++)
         {
-            param2 += ' ' + tokens[i];
-            tokens[i] = "";
+            param2 += ' ' + tokens[ii];
+            tokens[ii] = "";
+            stop = true;
         }
     }
     if (tokens.size() >= 4)
     {
         param3 = tokens[3];
-        for (size_t i = 4; i < tokens.size() && param2.front() != '"'; i++)
-            param3 += ' ' + tokens[i];
+        for (size_t ii = 4; ii < tokens.size() && param2.front() != '"' && !stop; ii++)
+            param3 += ' ' + tokens[ii];
     }
 
     /* Retirar as aspas (se houver) do param2. */
-    if (param2.front() == '"') {
+    if (param2.front() == '"')
+    {
         param2.erase(0, 1);
         param2.pop_back();
     }
 }
 
+/**
+ * @brief Verifica se os argumentos passados são válidos de acordo com a quantidade esperada.
+ *
+ * @param param1 O primeiro parâmetro.
+ * @param param2 O segundo parâmetro.
+ * @param param3 O terceiro parâmetro.
+ * @param argc O número de argumentos esperados.
+ *
+ * @return Retorna true se os argumentos forem válidos, e false caso contrário.
+ */
 bool verificarArgumentos(const string &param1, const string &param2, const string &param3, int argc)
 {
     switch (argc)
@@ -94,6 +116,36 @@ bool verificarArgumentos(const string &param1, const string &param2, const strin
         return false;
         break;
     }
+}
+
+/**
+ * @brief Obtém a data e hora atual em formato de string.
+ *
+ * @return A data e hora atual no formato "dia/mês/ano - hora:minuto".
+ */
+string obterDataHoraAtual()
+{
+    time_t tempoAtual = time(nullptr);
+    tm *tempoLocal = localtime(&tempoAtual);
+
+    /* Extraindo os componentes de data e hora. */
+    int ano = tempoLocal->tm_year + 1900;
+    int mes = tempoLocal->tm_mon + 1;
+    int dia = tempoLocal->tm_mday;
+    int hora = tempoLocal->tm_hour;
+    int minuto = tempoLocal->tm_min;
+
+    /* Manipulando strings para adicionar zeros à esquerda. */
+    string mes_str = (mes < 10) ? "0" + to_string(mes) : to_string(mes);
+    string dia_str = (dia < 10) ? "0" + to_string(dia) : to_string(dia);
+    string hora_str = (hora < 10) ? "0" + to_string(hora) : to_string(hora);
+    string minuto_str = (minuto < 10) ? "0" + to_string(minuto) : to_string(minuto);
+
+    /* Construindo a string de data e hora. */
+    string data_hora = dia_str + "/" + mes_str + "/" + to_string(ano) + " - " +
+                       hora_str + ":" + minuto_str;
+
+    return data_hora;
 }
 
 /**
@@ -196,6 +248,48 @@ int executarComando(Sistema &sistema, const string &comando, const string &param
     {
         if (verificarArgumentos(param1, param2, param3, 0))
             sistema.listarParticipantesDoServidor();
+        else
+            cout << "Este comando precisa de 0 argumento(s) para funcionar." << endl;
+    }
+    else if (comando == "list-channels")
+    {
+        if (verificarArgumentos(param1, param2, param3, 0))
+            sistema.listarCanais();
+        else
+            cout << "Este comando precisa de 0 argumento(s) para funcionar." << endl;
+    }
+    else if (comando == "create-channel")
+    {
+        if (verificarArgumentos(param1, param2, param3, 2))
+            sistema.criarCanal(param1, param2);
+        else
+            cout << "Este comando precisa de 2 argumento(s) para funcionar." << endl;
+    }
+    else if (comando == "enter-channel")
+    {
+        if (verificarArgumentos(param1, param2, param3, 1))
+            sistema.entrarEmCanal(param1);
+        else
+            cout << "Este comando precisa de 1 argumento(s) para funcionar." << endl;
+    }
+    else if (comando == "leave-channel")
+    {
+        if (verificarArgumentos(param1, param2, param3, 0))
+            sistema.sairDoCanal();
+        else
+            cout << "Este comando precisa de 0 argumento(s) para funcionar." << endl;
+    }
+    else if (comando == "send-message")
+    {
+        if (verificarArgumentos(param1, param2, param3, 1))
+            sistema.enviarMensagem(param1, obterDataHoraAtual());
+        else
+            cout << "Este comando precisa de 1 argumento(s) para funcionar." << endl;
+    }
+    else if (comando == "list-messages")
+    {
+        if (verificarArgumentos(param1, param2, param3, 0))
+            sistema.listarMensagens();
         else
             cout << "Este comando precisa de 0 argumento(s) para funcionar." << endl;
     }
