@@ -5,8 +5,8 @@
 #ifndef CANALTEXTO_H
 #define CANALTEXTO_H
 
-#include "Canal.h"
-#include "Mensagem.h"
+#include "Canal.h"      /**< Inclui a classe Canal. */
+#include "Mensagem.h"   /**< Inclui a classe Mensagem. */
 
 /**
  * @class CanalTexto
@@ -15,18 +15,41 @@
 class CanalTexto : public Canal
 {
 protected:
-    vector<Mensagem> mensagens;
+    vector<Mensagem> mensagens;  /**< Vetor de mensagens do canal de texto. */
 
 public:
     /**
-     * @brief Construtor padrão da classe CanalTexto.
+     * @brief Construtor da classe CanalTexto.
+     * 
+     * @param nome O nome do canal de texto.
      */
-    CanalTexto();
+    CanalTexto(string);
 
     /**
      * @brief Destrutor padrão da classe CanalTexto.
      */
     ~CanalTexto();
+
+    /**
+     * @brief Obtém o tipo do canal de texto.
+     * 
+     * @return O tipo do canal de texto.
+     */
+    string getTipo() const;
+
+    /**
+     * @brief Obtém as mensagens do canal de texto.
+     * 
+     * @return O vetor de mensagens do canal de texto.
+     */
+    vector<Mensagem> getMensagens() override;
+
+    /**
+     * @brief Envia uma mensagem no canal de texto.
+     * 
+     * @param mensagem A mensagem a ser enviada.
+     */
+    void enviarMensagem(const Mensagem &) override;
 };
 
 #endif
