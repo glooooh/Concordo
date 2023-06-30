@@ -5,13 +5,15 @@
 
 #include <iostream>
 
-#include "Servidor.h" /**< Inclui a classe Servidor. */
+#include "Servidor.h"   /**< Inclui a classe Servidor. */
+#include "CanalTexto.h" /**< Inclui a classe CanalTexto. */
+#include "CanalVoz.h"   /**< Inclui a classe CanalVoz. */
 
 /**
  * @brief Construtor da classe Servidor.
  *
  * @param donoId O ID do usuário dono do servidor.
- * @param n O nome do servidor.
+ * @param nomeServidor O nome do servidor.
  */
 Servidor::Servidor(int donoId, string nomeServidor)
 {
@@ -24,12 +26,12 @@ Servidor::Servidor(int donoId, string nomeServidor)
 }
 
 /**
- * @brief Construtor padrão da classe Usuario.
+ * @brief Construtor padrão da classe Servidor.
  */
 Servidor::Servidor() {}
 
 /**
- * @brief Destrutor da classe Usuario.
+ * @brief Destrutor da classe Servidor.
  */
 Servidor::~Servidor()
 {
@@ -39,7 +41,7 @@ Servidor::~Servidor()
         delete canais[i];
     }
 
-    canais.clear();           /*<! Limpar o vetor de canais. */ 
+    canais.clear();           /*<! Limpar o vetor de canais. */
     participantesIDs.clear(); /*<! Limpar o vetor de participantesIDs. */
 }
 
@@ -94,6 +96,16 @@ vector<int> Servidor::getParticipantesID()
 }
 
 /**
+ * @brief Obtém os canais do servidor.
+ *
+ * @return Um vetor contendo os canais do servidor.
+ */
+vector<Canal *> Servidor::getCanais()
+{
+    return canais;
+}
+
+/**
  * @brief Define a descrição do servidor.
  *
  * @param desc A nova descrição a ser atribuída ao servidor.
@@ -131,13 +143,53 @@ void Servidor::adicionarParticipantes(int id)
  */
 bool Servidor::buscarParticipantePorId(int id)
 {
-    for (size_t i = 0; i < participantesIDs.size(); i++)
+    /* Percorre cada membro do vector de ids.*/
+    for (int participanteID : participantesIDs)
     {
-        if (participantesIDs[i] == id)
-        {
+        /*  Verifica se é o mesmo id fornecido como parâmetro. */
+        if (participanteID == id)
             return true;
-        }
     }
 
     return false;
+}
+
+/**
+ * @brief Cria um novo canal no servidor.
+ *
+ * @param nome O nome do canal.
+ * @param tipo O tipo do canal.
+ */
+void Servidor::criarCanal(string nome, string tipo)
+{
+    /* Percorre o vector de canais do servidor. */
+    for (Canal *canal : this->getCanais())
+    {
+        /* Verifica se já existe um canal com o mesmo nome no servidor. */
+        if (canal->getNome() == nome)
+        {
+            cout << "Canal de " << tipo << " '" << nome << "' ja existe!" << endl;
+            return;
+        }
+    }
+
+    /* Cria um canal de acordo com o tipo designado. */
+    if (tipo == "texto")
+    {
+        CanalTexto *canal = new CanalTexto(nome);
+        canais.push_back(canal);
+    }
+    else if (tipo == "voz")
+    {
+        CanalVoz *canal = new CanalVoz(nome);
+        canais.push_back(canal);
+    }
+    else
+    {
+        cout << "Tipo de canal invalido" << endl;
+        return;
+    }
+
+    /* Mensagem de sucesso. */
+    cout << "Canal de " << tipo << " '" << nome << "' criado" << endl;
 }
