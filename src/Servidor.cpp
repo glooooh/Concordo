@@ -162,6 +162,7 @@ bool Servidor::buscarParticipantePorId(int id)
  */
 void Servidor::criarCanal(string nome, string tipo)
 {
+    
     /* Percorre o vector de canais do servidor. */
     for (Canal *canal : this->getCanais())
     {
