@@ -112,14 +112,14 @@ _Exemplo:_
 list-channels
 ```
 
-- <h3>create-channel</h3>
+- <h3>create-channel <'nome'> <'tipo'></h3>
 Este comando permite criar um canal no servidor informando seu nome e seu tipo (voz ou texto) e só pode ser executado pelo dono do servidor.
 _Exemplo:_ 
 ```
 create-channel meu-primeiro-canal texto
 ```
 
-- <h3>enter-channel</h3>
+- <h3>enter-channel <'nome'></h3>
 Este comando permite entrar em um canal presente na lista de canais do servidor e só pode ser executado por usuários dentro de um servidor.
 _Exemplo:_ 
 ```
@@ -133,7 +133,7 @@ _Exemplo:_
 leave-channel
 ```
 
-- <h3>send-message</h3>
+- <h3>send-message <'mensagem'></h3>
 Este comando permite enviar uma mensagem em um canal e só pode ser executado por usuários dentro de um canal.
 _Exemplo:_ 
 ```

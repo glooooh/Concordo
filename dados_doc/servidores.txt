@@ -1,4 +1,4 @@
-2
+3
 1
 IMD
 Descrição do servidor do IMD
@@ -11,16 +11,16 @@ geral
 TEXTO
 2
 1
-11/07/2023 - 09:04
+11/07/2023 - 09:22
 oi
 2
-11/07/2023 - 09:04
+11/07/2023 - 09:22
 olá
 fale-com-o-professor
 VOZ
 1
 1
-11/07/2023 - 09:04
+11/07/2023 - 09:22
 alguém aí?
 3
 UFRN
@@ -33,8 +33,15 @@ informativos
 TEXTO
 2
 3
-11/07/2023 - 09:04
+11/07/2023 - 09:22
 aulas remotas #ativar
 3
-11/07/2023 - 09:04
+11/07/2023 - 09:22
 aulas remotas #continuar
+3
+servidor-com-codigo
+
+4567
+1
+3
+0
