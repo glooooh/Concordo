@@ -45,42 +45,42 @@ public:
      *
      * @return O ID do usuário dono.
      */
-    int getIdDono();
+    int getIdDono() const;
 
     /**
      * @brief Obtém o nome do servidor.
      *
      * @return O nome do servidor.
      */
-    string getNome();
+    string getNome() const;
 
     /**
      * @brief Obtém a descrição do servidor.
      *
      * @return A descrição do servidor.
      */
-    string getDescricao();
+    string getDescricao() const;
 
     /**
      * @brief Obtém o código de convite do servidor.
      *
      * @return O código de convite do servidor.
      */
-    string getCodigo();
+    string getCodigo() const;
 
     /**
      * @brief Obtém os IDs dos participantes do servidor.
      *
      * @return Um vetor contendo os IDs dos participantes.
      */
-    vector<int> getParticipantesID();
+    vector<int> getParticipantesID() const;
 
     /**
      * @brief Obtém os canais do servidor.
      *
      * @return Um vetor contendo os canais do servidor.
      */
-    vector<Canal *> getCanais();
+    vector<Canal *> getCanais() const;
 
     /**
      * @brief Define a descrição do servidor.
@@ -117,7 +117,7 @@ public:
      * @param nome O nome do canal.
      * @param tipo O tipo do canal.
      */
-    void criarCanal(string nome, string tipo);
+    bool criarCanal(string nome, string tipo);
 };
 
 #endif

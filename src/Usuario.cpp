@@ -38,7 +38,7 @@ Usuario::~Usuario() {}
  *
  * @return O ID do usuário.
  */
-int Usuario::getID() {
+int Usuario::getID() const {
     return id;
 }
 
@@ -47,7 +47,7 @@ int Usuario::getID() {
  *
  * @return O nome do usuário.
  */
-string Usuario::getNome() {
+string Usuario::getNome() const {
     return nome;
 }
 
@@ -56,7 +56,7 @@ string Usuario::getNome() {
  *
  * @return O email do usuário.
  */
-string Usuario::getEmail() {
+string Usuario::getEmail() const {
     return email;
 }
 
@@ -65,6 +65,6 @@ string Usuario::getEmail() {
  *
  * @return A senha do usuário.
  */
-string Usuario::getSenha() {
+string Usuario::getSenha() const {
     return senha;
 }

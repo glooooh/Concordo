@@ -4,6 +4,8 @@
  */
 
 #include <iostream>
+#include <fstream>
+#include <vector>
 
 #include "Sistema.h" /**< Inclui a classe Sistema. */
 
@@ -44,6 +46,299 @@ Sistema::~Sistema()
 }
 
 /**
+ * @brief Salva os usuários do sistema em um arquivo.
+ *
+ * @details Abre um arquivo e escreve as informações dos usuários do sistema.
+ * O arquivo contém o número total de usuários e, em seguida, cada usuário é
+ * salvo em uma nova linha com o ID, nome, e-mail e senha.
+ *
+ * @note O arquivo é salvo no caminho "../dados_doc/usuarios.txt".
+ */
+void Sistema::salvarUsuarios()
+{
+    ofstream arquivo("../dados_doc/usuarios.txt");
+
+    if (!arquivo.is_open())
+    {
+        cout << "Erro ao abrir o arquivo de usuários." << endl;
+        return;
+    }
+
+    /* Preenche o arquivo de usuarios. */
+
+    arquivo << this->usuariosDoSistema->size() << endl;
+
+    for (const Usuario *usuario : *usuariosDoSistema)
+    {
+        arquivo << usuario->getID() << endl;
+        arquivo << usuario->getNome() << endl;
+        arquivo << usuario->getEmail() << endl;
+        arquivo << usuario->getSenha() << endl;
+    }
+
+    arquivo.close();
+}
+
+/**
+ * @brief Salva os servidores do sistema em um arquivo.
+ *
+ * @details Abre um arquivo e escreve as informações dos servidores do sistema.
+ * O arquivo contém o número total de servidores e, em seguida, cada servidor é
+ * salvo em uma nova seção com o ID do dono, nome, descrição, código de convite,
+ * lista de participantes, lista de canais e suas mensagens.
+ *
+ * @note O arquivo é salvo no caminho "../dados_doc/servidores.txt".
+ */
+void Sistema::salvarServidores()
+{
+    ofstream arquivo("../dados_doc/servidores.txt");
+
+    if (!arquivo.is_open())
+    {
+        cout << "Erro ao abrir o arquivo de usuários." << endl;
+        return;
+    }
+
+    /* Preenche o arquivo de servidores. */
+
+    arquivo << this->servidoresDoSistema->size() << endl;
+
+    for (const Servidor *servidor : *servidoresDoSistema)
+    {
+        arquivo << servidor->getIdDono() << endl;
+        arquivo << servidor->getNome() << endl;
+        arquivo << servidor->getDescricao() << endl;
+        arquivo << servidor->getCodigo() << endl;
+        arquivo << servidor->getParticipantesID().size() << endl;
+        for (int id : servidor->getParticipantesID())
+            arquivo << id << endl;
+        arquivo << servidor->getCanais().size() << endl;
+        for (Canal *canal : servidor->getCanais())
+        {
+            arquivo << canal->getNome() << endl;
+            arquivo << canal->getTipo() << endl;
+            arquivo << canal->getMensagens().size() << endl;
+            for (Mensagem mensagem : canal->getMensagens())
+            {
+                arquivo << mensagem.getIdRemetente() << endl;
+                arquivo << mensagem.getDataHora() << endl;
+                arquivo << mensagem.getConteudo() << endl;
+            }
+        }
+    }
+
+    arquivo.close();
+}
+
+/**
+ * @brief Carrega os usuários do sistema a partir de um arquivo.
+ *
+ * @details Abre um arquivo e lê as informações dos usuários do sistema.
+ * O arquivo deve conter o número total de usuários e, em seguida, cada usuário é
+ * cadastrado no sistema com seu ID, nome, email e senha.
+ *
+ * @note O arquivo é lido a partir do caminho "../dados_doc/usuarios.txt".
+ */
+void Sistema::carregarUsuarios()
+{
+    /** Leitura do arquivo. */
+    ifstream arquivo("../dados_doc/usuarios.txt");
+
+    /* Caso o programa não consiga ler o arquivo retorna com erro. */
+    if (!arquivo.is_open())
+    {
+        cout << "Houve um problema ao abrir o arquivo." << endl;
+        return;
+    }
+
+    /* Se o programa conseguir abrir o arquivo o código lê as informações e cadastra as playlists. */
+    string linha_temp;
+
+    while (getline(arquivo, linha_temp))
+    {
+        int qntd_elementos;
+        qntd_elementos = stoi(linha_temp);
+
+        /* Adiciona todos os usuário */
+        for (int ii = 0; ii < qntd_elementos; ii++)
+        {
+            string email, senha, nome, id;
+            getline(arquivo, id);
+            getline(arquivo, nome);
+            getline(arquivo, email);
+            getline(arquivo, senha);
+            if (buscarPeloEmail(email) == nullptr)
+            {
+                Usuario *user = new Usuario(nome, email, senha, stoi(id));
+                usuariosDoSistema->push_back(user);
+            }
+        }
+    }
+
+    /** Fecha o arquivo. */
+    arquivo.close();
+}
+
+/**
+ * @brief Carrega os servidores do sistema a partir de um arquivo.
+ *
+ * @details Abre um arquivo e lê as informações dos servidores do sistema.
+ * O arquivo deve conter o número total de servidores e, em seguida, cada servidor é
+ * cadastrado no sistema com seu ID do dono, nome, descrição, código de convite,
+ * lista de participantes, lista de canais e suas mensagens correspondentes.
+ *
+ * @note O arquivo é lido a partir do caminho "../dados_doc/servidores.txt".
+ */
+void Sistema::carregarServidores()
+{
+    /** Leitura do arquivo. */
+    ifstream arquivo("../dados_doc/servidores.txt");
+
+    /* Caso o programa não consiga ler o arquivo retorna com erro. */
+    if (!arquivo.is_open())
+    {
+        cout << "Houve um problema ao abrir o arquivo." << endl;
+        return;
+    }
+
+    /* Se o programa conseguir abrir o arquivo o código lê as informações e cadastra os dados. */
+    string linha_temp;
+    while (getline(arquivo, linha_temp))
+    {
+        int qntd_servidores, qntd_participantes, qntd_canais, qntd_mensagens;
+        qntd_servidores = stoi(linha_temp);
+
+        /* Adiciona todos os servidores */
+        for (int ii = 0; ii < qntd_servidores; ii++)
+        {
+            /* Armazena informações do servidor. */
+            string id_dono_servidor, nome_servidor, descricao_servidor, codigo_convite_servidor;
+            getline(arquivo, id_dono_servidor);
+            getline(arquivo, nome_servidor);
+            getline(arquivo, descricao_servidor);
+            getline(arquivo, codigo_convite_servidor);
+
+            /* Cria servidor. */
+            Servidor *server = buscarServidorPorNome(nome_servidor, "");
+            if (server == nullptr)
+            {
+                server = new Servidor(stoi(id_dono_servidor), nome_servidor);
+                servidoresDoSistema->push_back(server);
+            }
+            server->setDescricao(descricao_servidor);
+            server->setCodigo(codigo_convite_servidor);
+
+            /* Armazena todos os participantes. */
+            int id_participante;
+            getline(arquivo, linha_temp);
+            qntd_participantes = stoi(linha_temp);
+            bool participanteEncontrado = false;
+            for (int jj = 0; jj < qntd_participantes; jj++)
+            {
+                getline(arquivo, linha_temp);
+                id_participante = stoi(linha_temp);
+                for (size_t kk = 0; kk < server->getParticipantesID().size(); kk++)
+                {
+                    if (id_participante == server->getParticipantesID()[kk])
+                    {
+                        participanteEncontrado = true;
+                    }
+                }
+                if (!participanteEncontrado)
+                    server->adicionarParticipantes(id_participante);
+            }
+
+            /* Armazena informações dos canais. */
+            getline(arquivo, linha_temp);
+            qntd_canais = stoi(linha_temp);
+            for (int jj = 0; jj < qntd_canais; jj++)
+            {
+                string nome_canal, tipo_canal;
+                getline(arquivo, nome_canal);
+                getline(arquivo, tipo_canal);
+                if (tipo_canal == "TEXTO")
+                    tipo_canal = "texto";
+                else if (tipo_canal == "VOZ")
+                    tipo_canal = "voz";
+
+                /* Verifica se o canal já foi cadastrado no sistema atual. */
+                Canal *channel = nullptr;
+                for (Canal *canal : server->getCanais())
+                {
+                    if (canal->getNome() == nome_canal)
+                    {
+                        channel = canal;
+                        break;
+                    }
+                }
+                /* Cadastra o canal se for necessário. */
+                if (channel == nullptr)
+                {
+                    server->criarCanal(nome_canal, tipo_canal);
+                    channel = server->getCanais().back();
+                }
+
+                /* Armazena informações das mensagens. */
+                getline(arquivo, linha_temp);
+                qntd_mensagens = stoi(linha_temp);
+                for (int kk = 0; kk < qntd_mensagens; kk++)
+                {
+                    string conteudo_mensagem, id_remetente_mensagem, data_hora_mensagem;
+                    getline(arquivo, id_remetente_mensagem);
+                    getline(arquivo, data_hora_mensagem);
+                    getline(arquivo, conteudo_mensagem);
+
+                    /* Verifica se a mensagem já está cadastrada no sistema. */
+                    bool mensagemEncontrada = false;
+                    for (Mensagem msg : channel->getMensagens())
+                    {
+                        if (msg.getConteudo() == conteudo_mensagem && msg.getDataHora() == data_hora_mensagem && msg.getIdRemetente() == stoi(id_remetente_mensagem))
+                        {
+                            mensagemEncontrada = true;
+                            break;
+                        }
+                    }
+
+                    /* Cadastra a mensagem se for necessário. */
+                    if (!mensagemEncontrada)
+                    {
+                        Mensagem mensagem(conteudo_mensagem, stoi(id_remetente_mensagem), data_hora_mensagem);
+                        channel->enviarMensagem(mensagem);
+                    }
+                }
+            }
+        }
+    }
+
+    /** Fecha o arquivo. */
+    arquivo.close();
+}
+
+/**
+ * @brief Salva os usuários e servidores do sistema.
+ *
+ * @details Chama as funções de salvarUsuarios() e salvarServidores() para salvar as informações
+ * dos usuários e servidores do sistema em arquivos separados.
+ */
+void Sistema::salvar()
+{
+    salvarUsuarios();
+    salvarServidores();
+}
+
+/**
+ * @brief Carrega os usuários e servidores do sistema.
+ *
+ * @details Chama as funções de carregarUsuarios() e carregarServidores() para carregar as informações
+ * dos usuários e servidores do sistema de arquivos separados.
+ */
+void Sistema::carregar()
+{
+    carregarUsuarios();
+    carregarServidores();
+}
+
+/**
  * @brief Adiciona um novo usuário ao sistema.
  *
  * @param email O email do usuário.
@@ -54,6 +349,8 @@ Sistema::~Sistema()
  */
 bool Sistema::adicionarUsuario(string email, string senha, string nome)
 {
+    carregar();
+
     // Verifica se um usuário com os mesmos dados já foi cadastrado
     int tamanho = usuariosDoSistema->size();
     for (int ii = 0; ii < tamanho; ii++)
@@ -70,7 +367,26 @@ bool Sistema::adicionarUsuario(string email, string senha, string nome)
     Usuario *user = new Usuario(nome, email, senha, tamanho);
     usuariosDoSistema->push_back(user);
     cout << "Usuario criado" << endl;
+
+    salvar();
+
     return true;
+}
+
+/**
+ * @brief Busca um usuário pelo email.
+ *
+ * @param email O email do usuário a ser buscado.
+ * @return Um ponteiro para o usuário encontrado ou nullptr caso nenhum usuário seja encontrado com o email fornecido.
+ */
+Usuario *Sistema::buscarPeloEmail(string email)
+{
+    for (Usuario *user : *usuariosDoSistema)
+    {
+        if (user->getEmail() == email)
+            return user;
+    }
+    return nullptr;
 }
 
 /**
@@ -104,6 +420,8 @@ Usuario *Sistema::buscarPeloID(int indiceBuscado)
  */
 bool Sistema::login(string email, string senha)
 {
+    carregar();
+
     /* Verifica se existe algum usuário logado */
     if (usuarioLogadoAtual != nullptr)
     {
@@ -133,6 +451,8 @@ bool Sistema::login(string email, string senha)
  */
 bool Sistema::disconnect()
 {
+    carregar();
+
     // Verifica se existe algum usuário logado.
     if (usuarioLogadoAtual == nullptr)
     {
@@ -212,6 +532,8 @@ Servidor *Sistema::buscarServidorPorNome(string nome, int &index, string msgDeEr
  */
 void Sistema::criarServidor(string nome)
 {
+    carregar();
+
     // Verifica se existe algum usuário logado.
     if (usuarioLogadoAtual == nullptr)
     {
@@ -233,6 +555,8 @@ void Sistema::criarServidor(string nome)
 
     // Imprime mensagem de sucesso.
     cout << "Servidor criado" << endl;
+
+    salvar();
 }
 
 /**
@@ -244,6 +568,8 @@ void Sistema::criarServidor(string nome)
  */
 bool Sistema::removerServidor(string nome)
 {
+    carregar();
+
     // Verifica se existe algum usuário logado.
     if (usuarioLogadoAtual == nullptr)
     {
@@ -278,6 +604,9 @@ bool Sistema::removerServidor(string nome)
     servidoresDoSistema->erase(servidoresDoSistema->begin() + index);
     cout << "Servidor '" + server->getNome() + "' removido" << endl;
     delete server;
+
+    salvar();
+
     return true;
 }
 
@@ -286,6 +615,8 @@ bool Sistema::removerServidor(string nome)
  */
 void Sistema::listarServidores()
 {
+    carregar();
+
     // Verifica se existe algum usuário logado.
     if (usuarioLogadoAtual == nullptr)
     {
@@ -333,6 +664,8 @@ bool Sistema::verificarDonoServidor(Servidor *server, string mensagemDeErro)
  */
 void Sistema::modificarDescricaoDeServidor(string nome, string descricao)
 {
+    carregar();
+
     // Verifica se existe algum usuário logado.
     if (usuarioLogadoAtual == nullptr)
     {
@@ -354,6 +687,8 @@ void Sistema::modificarDescricaoDeServidor(string nome, string descricao)
     // Modifica a descrição e imprime mensagem de sucesso.
     server->setDescricao(descricao);
     cout << "Descricao do servidor '" << server->getNome() << "' modificada!" << endl;
+
+    salvar();
 }
 
 /**
@@ -364,6 +699,8 @@ void Sistema::modificarDescricaoDeServidor(string nome, string descricao)
  */
 void Sistema::modificarCodigoServidor(string nome, string codigo)
 {
+    carregar();
+
     // Verifica se existe algum usuário logado.
     if (usuarioLogadoAtual == nullptr)
     {
@@ -391,6 +728,8 @@ void Sistema::modificarCodigoServidor(string nome, string codigo)
     // Modifica o código e imprime mensagem de sucesso.
     server->setCodigo(codigo);
     cout << "Codigo de convite do servidor '" << server->getNome() << "' " << status << "!" << endl;
+
+    salvar();
 }
 
 /**
@@ -401,6 +740,11 @@ void Sistema::modificarCodigoServidor(string nome, string codigo)
  */
 void Sistema::entrarEmServidor(string nome, string cod)
 {
+    carregar();
+
+    // cout << servidoresDoSistema->size() << endl;
+    // cout << usuariosDoSistema->size() << endl;
+
     /* Verifica se existe algum usuário logado. */
     if (usuarioLogadoAtual == nullptr)
     {
@@ -461,6 +805,7 @@ void Sistema::entrarEmServidor(string nome, string cod)
     {
         server->adicionarParticipantes(usuarioLogadoAtual->getID());
     }
+    salvar();
 }
 
 /**
@@ -468,6 +813,8 @@ void Sistema::entrarEmServidor(string nome, string cod)
  */
 void Sistema::sairDoServidor()
 {
+    carregar();
+
     // Verifica se existe algum usuário logado.
     if (usuarioLogadoAtual == nullptr)
     {
@@ -494,6 +841,8 @@ void Sistema::sairDoServidor()
  */
 void Sistema::listarParticipantesDoServidor()
 {
+    carregar();
+
     // Verifica se existe algum usuário logado.
     if (usuarioLogadoAtual == nullptr)
     {
@@ -520,7 +869,7 @@ void Sistema::listarParticipantesDoServidor()
  * @brief Busca um canal no servidor atual pelo nome.
  *
  * @param nome O nome do canal a ser buscado.
- * 
+ *
  * @return Um ponteiro para o canal encontrado, ou nullptr caso não seja encontrado.
  */
 Canal *Sistema::buscarCanalPorNome(string nome)
@@ -541,6 +890,8 @@ Canal *Sistema::buscarCanalPorNome(string nome)
  */
 void Sistema::listarCanais()
 {
+    carregar();
+
     // Verifica se o usuário está em algum servidor.
     if (servidorAtual == nullptr)
     {
@@ -560,7 +911,7 @@ void Sistema::listarCanais()
     for (Canal *canal : canais)
     {
         string tipo = canal->getTipo();
-        if (tipo == "CanalTexto")
+        if (tipo == "TEXTO")
         {
             cout << canal->getNome() << endl;
         }
@@ -570,7 +921,7 @@ void Sistema::listarCanais()
     for (Canal *canal : canais)
     {
         string tipo = canal->getTipo();
-        if (tipo == "CanalVoz")
+        if (tipo == "VOZ")
         {
             cout << canal->getNome() << endl;
         }
@@ -585,6 +936,8 @@ void Sistema::listarCanais()
  */
 void Sistema::criarCanal(string nome, string tipo)
 {
+    carregar();
+
     /* Verifica se o usuário está em algum servidor. */
     if (servidorAtual == nullptr)
     {
@@ -599,7 +952,11 @@ void Sistema::criarCanal(string nome, string tipo)
         return;
     }
 
-    servidorAtual->criarCanal(nome, tipo);
+    /* Mensagem de sucesso. */
+    if (servidorAtual->criarCanal(nome, tipo))
+        cout << "Canal de " << tipo << " '" << nome << "' criado" << endl;
+
+    salvar();
 }
 
 /**
@@ -609,6 +966,8 @@ void Sistema::criarCanal(string nome, string tipo)
  */
 void Sistema::entrarEmCanal(string nome)
 {
+    carregar();
+
     // Verifica se o usuário está em algum servidor.
     if (servidorAtual == nullptr)
     {
@@ -633,6 +992,8 @@ void Sistema::entrarEmCanal(string nome)
  */
 void Sistema::sairDoCanal()
 {
+    carregar();
+
     // Verifica se o usuário está em algum canal.
     if (canalAtual == nullptr)
     {
@@ -652,6 +1013,8 @@ void Sistema::sairDoCanal()
  */
 void Sistema::enviarMensagem(string texto, string dataHora)
 {
+    carregar();
+
     // Verifica se o usuário está em algum canal.
     if (canalAtual == nullptr)
     {
@@ -664,6 +1027,8 @@ void Sistema::enviarMensagem(string texto, string dataHora)
     canalAtual->enviarMensagem(mensagem);
 
     cout << "Mensagem enviada com sucesso" << endl;
+
+    salvar();
 }
 
 /**
@@ -671,7 +1036,9 @@ void Sistema::enviarMensagem(string texto, string dataHora)
  */
 void Sistema::listarMensagens()
 {
-    // Verifica se o usuário está em algum canal.
+    carregar();
+
+    /* Verifica se o usuário está em algum canal. */
     if (canalAtual == nullptr)
     {
         cout << "Voce nao esta visualizando nenhum canal" << endl;

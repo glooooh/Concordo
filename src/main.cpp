@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <ctime>
 
 /**
@@ -42,6 +43,7 @@ void processarLinha(const string &linha, string &comando, string &param1, string
     if (tokens.size() >= 2)
     {
         param1 = tokens[1];
+
         for (size_t ii = 2; ii < tokens.size() && comando == "send-message"; ii++)
         {
             param1 += ' ' + tokens[ii];
@@ -52,25 +54,28 @@ void processarLinha(const string &linha, string &comando, string &param1, string
     if (tokens.size() >= 3)
     {
         param2 = tokens[2];
-        for (size_t ii = 3; ii < tokens.size() && param2.front() == '"' && !stop; ii++)
-        {
-            param2 += ' ' + tokens[ii];
-            tokens[ii] = "";
-            stop = true;
-        }
+        if (!stop)
+            for (size_t ii = 3; ii < tokens.size() && param2.front() == '"'; ii++)
+            {
+                param2 += ' ' + tokens[ii];
+                tokens[ii] = "";
+                stop = true;
+            }
     }
     if (tokens.size() >= 4)
     {
         param3 = tokens[3];
-        for (size_t ii = 4; ii < tokens.size() && param2.front() != '"' && !stop; ii++)
-            param3 += ' ' + tokens[ii];
+        if (!stop)
+            for (size_t ii = 4; ii < tokens.size() && param2.front() != '"'; ii++)
+                param3 += ' ' + tokens[ii];
     }
 
     /* Retirar as aspas (se houver) do param2. */
     if (param2.front() == '"')
     {
         param2.erase(0, 1);
-        param2.pop_back();
+        if (param2.back() == '"')
+            param2.pop_back();
     }
 }
 

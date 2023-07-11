@@ -42,28 +42,28 @@ public:
      *
      * @return O ID do usuário.
      */
-    int getID();
+    int getID() const;
 
     /**
      * @brief Obtém o nome do usuário.
      *
      * @return O nome do usuário.
      */
-    string getNome();
+    string getNome() const;
 
     /**
      * @brief Obtém o email do usuário.
      *
      * @return O email do usuário.
      */
-    string getEmail();
+    string getEmail() const;
 
     /**
      * @brief Obtém a senha do usuário.
      *
      * @return A senha do usuário.
      */
-    string getSenha();
+    string getSenha() const;
 };
 
 #endif

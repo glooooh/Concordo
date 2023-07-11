@@ -26,7 +26,7 @@ CanalVoz::~CanalVoz() {}
  */
 string CanalVoz::getTipo() const
 {
-    return "CanalVoz";
+    return "VOZ";
 }
 
 /**

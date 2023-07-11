@@ -91,19 +91,63 @@ enter-server meu-servidor 1234
 ```
 
 - <h3>leave-server</h3>
-Este comando retira o usuário de um servidor e só pode ser executado por usuários dentro do servidor.
+Este comando retira o usuário de um servidor e só pode ser executado por usuários dentro de um servidor.
 _Exemplo:_ 
 ```
 leave-server
 ```
 
 - <h3>list-participants</h3>
-Este comando lista as pessoas que participam do servidor e só pode ser executado por usuários dentro do servidor.
+Este comando lista as pessoas que participam do servidor e só pode ser executado por usuários dentro de um servidor.
 _Exemplo:_ 
 ```
 list-participants
 ```
 
+- <h3>list-channels</h3>
+Este comando exibe todos os canais do servidor, mostrando primeiro os nomes dos canais de texto, em
+seguida os nomes dos canais de voz. Só pode ser executado por usuários dentro de um servidor.
+_Exemplo:_ 
+```
+list-channels
+```
+
+- <h3>create-channel</h3>
+Este comando permite criar um canal no servidor informando seu nome e seu tipo (voz ou texto) e só pode ser executado pelo dono do servidor.
+_Exemplo:_ 
+```
+create-channel meu-primeiro-canal texto
+```
+
+- <h3>enter-channel</h3>
+Este comando permite entrar em um canal presente na lista de canais do servidor e só pode ser executado por usuários dentro de um servidor.
+_Exemplo:_ 
+```
+enter-channel meu-primeiro-canal
+```
+
+- <h3>leave-channel</h3>
+Este comando permite que o usuário saia de um canal e só pode ser executado por usuários dentro de um canal.
+_Exemplo:_ 
+```
+leave-channel
+```
+
+- <h3>send-message</h3>
+Este comando permite enviar uma mensagem em um canal e só pode ser executado por usuários dentro de um canal.
+_Exemplo:_ 
+```
+send-message Oi pessoal tudo bem?
+```
+
+- <h3>list-messages</h3>
+Este comando lista todas as mensagens enviadas em um canal e só pode ser executado por usuários dentro de um canal.
+_Exemplo:_ 
+```
+list-messages
+```
+
 ## Limitações do Programa:
-- O programa não possui um banco de dados, assim, todos o dados modificados serão perdidos ao fim do programa.
-- Só é possível um usuário logado por vez.
+- Só é possível um usuário logado por vez;
+- Os arquivos que armazenam os dados não está protegidos;
+- Caso tais arquivos sejam corrompidos pelo usuário, o sistema não funcionará.

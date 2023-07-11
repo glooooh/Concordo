@@ -26,7 +26,7 @@ CanalTexto::~CanalTexto() {}
  */
 string CanalTexto::getTipo() const
 {
-    return "CanalTexto";
+    return "TEXTO";
 }
 
 /**

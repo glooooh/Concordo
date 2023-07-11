@@ -25,6 +25,26 @@ private:
     Servidor *servidorAtual;                 /*<! Qual o servidor que o usuário está visualizando no momento */
     Canal *canalAtual;                       /*<! Qual o canal que o usuário está visualizando no momento */
 
+    /**
+     * @brief Salva os usuários do sistema em um arquivo.
+     */
+    void salvarUsuarios();
+
+    /**
+     * @brief Salva os servidores do sistema em um arquivo.
+     */
+    void salvarServidores();
+
+    /**
+     * @brief Carrega os usuários do sistema a partir de um arquivo.
+     */
+    void carregarUsuarios();
+
+    /**
+     * @brief Carrega os servidores do sistema a partir de um arquivo.
+     */
+    void carregarServidores();
+
 public:
     /**
      * @brief Construtor padrão da classe Sistema.
@@ -37,6 +57,16 @@ public:
     ~Sistema();
 
     /**
+     * @brief Salva os usuários e servidores do sistema.
+     */
+    void salvar();
+
+    /**
+     * @brief Carrega os usuários e servidores do sistema.
+     */
+    void carregar();
+
+    /**
      * @brief Adiciona um novo usuário ao sistema.
      *
      * @param email O email do usuário.
@@ -46,6 +76,14 @@ public:
      * @return Retorna True se o cadastro foi bem sucedido, False caso contrário.
      */
     bool adicionarUsuario(string, string, string);
+
+    /**
+     * @brief Busca um usuário pelo email.
+     *
+     * @param email O email do usuário a ser buscado.
+     * @return Um ponteiro para o usuário encontrado ou nullptr caso nenhum usuário seja encontrado com o email fornecido.
+     */
+    Usuario *buscarPeloEmail(string email);
 
     /**
      * @brief Busca um usuário pelo índice.

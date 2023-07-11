@@ -50,7 +50,7 @@ Servidor::~Servidor()
  *
  * @return O ID do usuário dono.
  */
-int Servidor::getIdDono()
+int Servidor::getIdDono() const
 {
     return usuarioDonoId;
 }
@@ -60,7 +60,7 @@ int Servidor::getIdDono()
  *
  * @return O nome do servidor.
  */
-string Servidor::getNome()
+string Servidor::getNome() const
 {
     return nome;
 }
@@ -70,7 +70,7 @@ string Servidor::getNome()
  *
  * @return A descrição do servidor.
  */
-string Servidor::getDescricao()
+string Servidor::getDescricao() const
 {
     return descricao;
 }
@@ -80,7 +80,7 @@ string Servidor::getDescricao()
  *
  * @return O código de convite do servidor.
  */
-string Servidor::getCodigo()
+string Servidor::getCodigo() const
 {
     return codigoConvite;
 }
@@ -90,7 +90,7 @@ string Servidor::getCodigo()
  *
  * @return Um vetor contendo os IDs dos participantes.
  */
-vector<int> Servidor::getParticipantesID()
+vector<int> Servidor::getParticipantesID() const
 {
     return participantesIDs;
 }
@@ -100,7 +100,7 @@ vector<int> Servidor::getParticipantesID()
  *
  * @return Um vetor contendo os canais do servidor.
  */
-vector<Canal *> Servidor::getCanais()
+vector<Canal *> Servidor::getCanais() const
 {
     return canais;
 }
@@ -160,7 +160,7 @@ bool Servidor::buscarParticipantePorId(int id)
  * @param nome O nome do canal.
  * @param tipo O tipo do canal.
  */
-void Servidor::criarCanal(string nome, string tipo)
+bool Servidor::criarCanal(string nome, string tipo)
 {
     
     /* Percorre o vector de canais do servidor. */
@@ -170,7 +170,7 @@ void Servidor::criarCanal(string nome, string tipo)
         if (canal->getNome() == nome)
         {
             cout << "Canal de " << tipo << " '" << nome << "' ja existe!" << endl;
-            return;
+            return false;
         }
     }
 
@@ -188,9 +188,8 @@ void Servidor::criarCanal(string nome, string tipo)
     else
     {
         cout << "Tipo de canal invalido" << endl;
-        return;
+        return false;
     }
 
-    /* Mensagem de sucesso. */
-    cout << "Canal de " << tipo << " '" << nome << "' criado" << endl;
+    return true;
 }
